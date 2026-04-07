@@ -32,7 +32,7 @@ Users complete tasks and Pomodoro focus sessions to earn XP, level up, and accum
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ### The Engine Layer — The Most Important Design Decision
 

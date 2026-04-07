@@ -1,0 +1,55 @@
+package com.harsh.task.domain.dto;
+
+import com.harsh.task.entity.TaskPriority;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public record CreateTaskRequestDto(
+
+        @NotBlank(message = ERROR_MESSAGE_TITLE_LENGTH)
+        @Length(max = 255 , message = ERROR_MESSAGE_TITLE_LENGTH)
+        String title,
+
+        @Length(max = 1000 , message = ERROR_MESSAGE_DESCRIPTION_LENGTH)
+        @Nullable
+        String description,
+
+        @FutureOrPresent(message = ERROR_MESSAGE_DUE_DATE_FUTURE)
+        @Nullable
+        LocalDate dueDate,
+
+        @FutureOrPresent(message = ERROR_MESSAGE_REMINDER_DATE_FUTURE)
+        @Nullable
+        LocalDateTime reminderDateTime,
+
+        @NotNull(message = ERROR_MESSAGE_PRIORITY)
+        TaskPriority priority,
+
+        @Nullable
+        List<String> tags
+
+) {
+
+    private static final String ERROR_MESSAGE_TITLE_LENGTH =
+            "Title must be between 1 and 255 characters";
+
+    private static final String ERROR_MESSAGE_DESCRIPTION_LENGTH =
+            "Description must be less than 1000 characters";
+
+    private static final String ERROR_MESSAGE_DUE_DATE_FUTURE =
+            "Due date must be in future";
+
+    private static final String ERROR_MESSAGE_REMINDER_DATE_FUTURE =
+            "Reminder date and time must be in the future";
+
+    private static final String ERROR_MESSAGE_PRIORITY =
+            "Task priority must be provided";
+
+}

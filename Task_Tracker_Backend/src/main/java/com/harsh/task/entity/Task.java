@@ -1,0 +1,81 @@
+package com.harsh.task.entity;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "tasks")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@EqualsAndHashCode
+@ToString
+public class Task {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "id" , nullable = false , updatable = false)
+    private UUID id;
+
+    @Column(name = "title" , nullable = false)
+    private String title;
+
+    @Column(name = "description" , length = 1000)
+    private String description;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
+    @Column(name = "reminder_date_time")
+    private LocalDateTime reminderDateTime;
+
+    @Column(name = "reminder_sent", nullable = false)
+    private boolean reminderSent = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status" , nullable = false)
+    private TaskStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority" , nullable = false)
+    private TaskPriority priority;
+
+    @Column(name = "created" , nullable = false , updatable = false)
+    private Instant created;
+
+    @Column(name = "updated" , nullable = false)
+    private Instant updated;
+
+    @Column(name = "pomodoro_count" , nullable = false)
+    private Integer pomodoroCount = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private User user;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "task_tags",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private java.util.Set<Tag> tags = new java.util.HashSet<>();
+
+
+}

@@ -1,0 +1,121 @@
+package com.harsh.task.entity;
+
+import com.harsh.task.engine.PauseTier;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Swapped to wrapper Long
+
+    @Column(nullable = false , unique = true , length = 50)
+    private String username;
+
+    @Column(nullable = false , unique = true , length = 100)
+    private String email;
+
+    @Column(nullable = false , length = 255)
+    private String password;
+
+    @Enumerated(EnumType.STRING) // Swapped String for Enum
+    @Column(nullable = false , length = 20)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    @Column(nullable = false , updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer currentXp = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer totalXp = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer level = 1;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer gemBalance = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer streakFreezesOwned = 0;
+
+    @Column
+    private LocalDateTime lastActiveTimestamp;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer currentDailyStreak = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer longestDailyStreak = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer pomodoroFlowStreak = 0;
+
+    @Column
+    private LocalDateTime lastPomodoroTime;
+
+    @Column
+    private LocalDateTime sessionDeadline;
+
+    @Column
+    private LocalDateTime pauseStartTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "worst_pause_tier")
+    private PauseTier worstPauseTier;
+
+    @Column(name = "xp_boost_active", nullable = false)
+    @Builder.Default
+    private boolean xpBoostActive = false;
+
+    @Column(name = "profile_theme", nullable = false)
+    @Builder.Default
+    private String profileTheme = "default";
+
+    // ✨ JPA Magic: Maps our new join table directly to a Set of strings!
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "user_themes",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "theme_name")
+    @Builder.Default
+    private Set<String> ownedThemes = new HashSet<>(List.of("default"));
+
+    @PrePersist
+    protected void onCreate(){
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+}
